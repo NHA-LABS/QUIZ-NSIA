@@ -71,7 +71,7 @@ exports.handler = async function (event) {
     await transporter.sendMail({
       from: `"${process.env.SMTP_FROM_NAME}" <${process.env.SMTP_USER}>`,
       to: process.env.SMTP_DEST,
-      replyTo: email || process.env.SMTP_USER,
+      replyTo: 'josselin.brou@groupensia.com',
       subject: `🚗 Nouveau lead Quiz NSIA – ${nom} (${score}/12 – ${profile})`,
       html: htmlBody,
     });
