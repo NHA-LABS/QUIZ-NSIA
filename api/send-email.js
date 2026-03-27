@@ -1,20 +1,17 @@
 const nodemailer = require("nodemailer");
 
-exports.handler = async function (event) {
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
-  }
+export default async function handler(req, res) {
+  // CORS
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  let data;
-  try {
-    data = JSON.parse(event.body);
-  } catch {
-    return { statusCode: 400, body: "Invalid JSON" };
-  }
+  if (req.method === "OPTIONS") return res.status(200).end();
+  if (req.method !== "POST") return res.status(405).json({ error: "Method Not Allowed" });
 
-  const { nom, tel, email, score, profile, emoji, cochees, nonCochees, date } = data;
+  const { nom, tel, email, score, profile, emoji, cochees, nonCochees, date } = req.body;
 
-  // ── Configuration SMTP via variables d'environnement Netlify ──
+  // ── Configuration SMTP via variables d'environnement Vercel ──
   const transporter = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
     port: parseInt(process.env.MAIL_PORT),
@@ -77,7 +74,6 @@ exports.handler = async function (event) {
     console.log("→ MAIL_HOST:", process.env.MAIL_HOST);
     console.log("→ MAIL_PORT:", process.env.MAIL_PORT);
     console.log("→ MAIL_USERNAME:", process.env.MAIL_USERNAME);
-    console.log("→ MAIL_REPLY_TO:", process.env.MAIL_REPLY_TO);
     console.log("→ Lead:", nom, "|", tel, "|", score + "/12", "|", profile);
 
     const mailOptions = {
@@ -91,18 +87,12 @@ exports.handler = async function (event) {
     const info = await transporter.sendMail(mailOptions);
     console.log("✅ Email envoyé – ID:", info.messageId);
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ success: true, messageId: info.messageId }),
-    };
+    return res.status(200).json({ success: true, messageId: info.messageId });
 
   } catch (err) {
     console.error("❌ SMTP error:", err.message);
     console.error("❌ Code:", err.code);
     console.error("❌ Response:", err.response);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ success: false, error: err.message }),
-    };
+    return res.status(500).json({ success: false, error: err.message });
   }
-};
+}

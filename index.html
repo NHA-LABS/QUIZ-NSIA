@@ -785,7 +785,7 @@
     const nonCochees = [...document.querySelectorAll('.chk-label:not(.checked) .chk-text')].map(e => '✗ ' + e.textContent.trim()).join('\n') || '(toutes cochées)';
 
     try {
-      await fetch('/.netlify/functions/send-email', {
+      await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nom, tel, email, score, profile: p.profile, emoji: p.emoji, cochees, nonCochees, date })
