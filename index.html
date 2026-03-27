@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Assurance Auto – NSIA Holding Assurances</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --gold: #D29F13;
+    --gold-light: #E8BF4A;
+    --gold-pale: rgba(210,159,19,0.12);
+    --navy: #001E60;
+    --navy-dark: #00154A;
+    --navy-mid: #002080;
+    --navy-glass: rgba(0,30,96,0.7);
+    --white: #FFFFFF;
+    --green: #2ECC87;
+    --red: #E05252;
+    --orange: #F5A623;
+    --muted: #7A9BD4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--navy-dark);
+    color: var(--white);
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 90% 5%, rgba(210,159,19,0.10) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 60% at 5% 90%, rgba(0,32,128,0.6) 0%, transparent 60%),
+      linear-gradient(160deg, #001E60 0%, #00154A 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── LOGO BAR ── */
+  .logo-bar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+    animation: fadeDown 0.5s ease both;
+  }
+
+  .logo-bar img {
+    height: 64px;
+    width: auto;
+    border-radius: 10px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center;
+    margin-bottom: 32px;
+    animation: fadeDown 0.5s 0.05s ease both;
+  }
+
+  .hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(210,159,19,0.15);
+    border: 1px solid rgba(210,159,19,0.35);
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 30px;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(28px, 6vw, 44px);
+    font-weight: 800;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--gold);
+  }
+
+  .hero p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.65;
+    max-width: 500px;
+    margin: 0 auto 16px;
+  }
+
+  .hero-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .hero-meta span { display: flex; align-items: center; gap: 5px; }
+
+  /* ── PROGRESS ── */
+  .progress-wrap {
+    margin-bottom: 24px;
+    animation: fadeUp 0.5s 0.1s ease both;
+  }
+
+  .progress-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .progress-track {
+    height: 5px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 5px;
+    width: 0%;
+    transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 20px;
+    padding: 28px;
+    backdrop-filter: blur(16px);
+    animation: fadeUp 0.5s 0.15s ease both;
+    margin-bottom: 16px;
+  }
+
+  /* ── SECTION HEADER ── */
+  .sec-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(210,159,19,0.18);
+  }
+
+  .sec-num {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px; font-weight: 800;
+    color: var(--navy-dark);
+    flex-shrink: 0;
+  }
+
+  .sec-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--white);
+    line-height: 1.2;
+  }
+
+  .sec-title small {
+    display: block;
+    font-family: 'Barlow', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* ── CHECKLIST ── */
+  .checklist { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+
+  .chk-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 13px 15px;
+    border-radius: 11px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    user-select: none;
+  }
+
+  .chk-label:hover {
+    border-color: rgba(210,159,19,0.28);
+    background: rgba(210,159,19,0.04);
+  }
+
+  .chk-label.checked {
+    border-color: rgba(210,159,19,0.45);
+    background: rgba(210,159,19,0.07);
+  }
+
+  input[type="checkbox"] { display: none; }
+
+  .chk-box {
+    width: 22px; height: 22px; flex-shrink: 0;
+    border: 2px solid rgba(255,255,255,0.18);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800;
+    color: transparent;
+    transition: all 0.18s ease;
+    margin-top: 1px;
+  }
+
+  .chk-label.checked .chk-box {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--navy-dark);
+  }
+
+  .chk-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: rgba(255,255,255,0.75);
+    flex: 1;
+  }
+
+  .chk-label.checked .chk-text { color: var(--white); font-weight: 500; }
+
+  /* ── CONTACT CARD ── */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .contact-grid .span2 { grid-column: 1 / -1; }
+
+  .field-wrap { display: flex; flex-direction: column; gap: 6px; }
+
+  .field-lbl {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .field-lbl sup { color: var(--gold); }
+
+  .field-inp {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 12px 15px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    color: var(--white);
+    outline: none;
+    transition: all 0.18s ease;
+    width: 100%;
+  }
+
+  .field-inp::placeholder { color: rgba(255,255,255,0.22); }
+
+  .field-inp:focus {
+    border-color: rgba(210,159,19,0.5);
+    background: rgba(210,159,19,0.05);
+    box-shadow: 0 0 0 3px rgba(210,159,19,0.08);
+  }
+
+  .field-inp.error { border-color: rgba(224,82,82,0.55); background: rgba(224,82,82,0.05); }
+
+  .field-err {
+    font-size: 11px; color: var(--red);
+    display: none;
+  }
+
+  .field-err.show { display: block; }
+
+  .privacy {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 12px; color: var(--muted); line-height: 1.55;
+    margin-top: 4px;
+  }
+
+  .privacy::before { content: '🔒'; flex-shrink: 0; font-size: 13px; }
+
+  /* ── SCORE + BTN ── */
+  .score-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 16px;
+  }
+
+  .score-lbl { font-size: 13px; color: var(--muted); font-weight: 500; }
+
+  .score-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 30px; font-weight: 800;
+    color: var(--gold);
+    transition: all 0.25s ease;
+  }
+
+  .btn-main {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    color: var(--navy-dark);
+    border: none; border-radius: 12px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 17px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+  }
+
+  .btn-main:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(210,159,19,0.38);
+  }
+
+  .btn-main:disabled { opacity: 0.7; cursor: not-allowed; }
+
+  /* ── RESULT ── */
+  .result-card {
+    display: none;
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 20px;
+    padding: 36px 28px;
+    text-align: center;
+    backdrop-filter: blur(16px);
+    animation: fadeUp 0.45s ease both;
+    margin-bottom: 16px;
+  }
+
+  .result-card.show { display: block; }
+
+  .result-greeting {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .result-emoji { font-size: 54px; margin-bottom: 10px; }
+
+  .result-score {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 64px; font-weight: 800;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .result-score.green { color: var(--green); }
+  .result-score.orange { color: var(--orange); }
+  .result-score.red { color: var(--red); }
+
+  .result-profile-lbl {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 8px;
+  }
+
+  .result-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 12px;
+  }
+
+  .result-tags {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    justify-content: center; margin-bottom: 20px;
+  }
+
+  .tag {
+    font-size: 12px; font-weight: 600;
+    padding: 5px 13px; border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .tag.green { border-color: rgba(46,204,135,0.3); color: var(--green); background: rgba(46,204,135,0.08); }
+  .tag.orange { border-color: rgba(245,166,35,0.3); color: var(--orange); background: rgba(245,166,35,0.08); }
+  .tag.red { border-color: rgba(224,82,82,0.3); color: var(--red); background: rgba(224,82,82,0.08); }
+
+  .result-desc {
+    color: rgba(255,255,255,0.65);
+    font-size: 14px; line-height: 1.7;
+    max-width: 460px; margin: 0 auto 24px;
+  }
+
+  .cta-box {
+    background: linear-gradient(135deg, rgba(210,159,19,0.1), rgba(210,159,19,0.04));
+    border: 1px solid rgba(210,159,19,0.22);
+    border-radius: 14px;
+    padding: 22px; margin-bottom: 18px;
+  }
+
+  .cta-box p {
+    font-size: 14px; color: rgba(255,255,255,0.72);
+    margin-bottom: 14px; line-height: 1.6;
+  }
+
+  .btn-cta {
+    display: inline-block;
+    padding: 13px 28px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: var(--navy-dark);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1px;
+    border-radius: 10px; text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(210,159,19,0.38); }
+
+  .linkedin-box {
+    background: rgba(10,102,194,0.1);
+    border: 1px solid rgba(10,102,194,0.22);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13px; color: rgba(255,255,255,0.6);
+    line-height: 1.6; margin-bottom: 18px;
+  }
+
+  .linkedin-box strong { color: #6AABDF; }
+
+  .btn-reset {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--muted);
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px; font-weight: 600;
+    padding: 10px 22px; border-radius: 10px;
+    cursor: pointer; transition: all 0.2s ease;
+  }
+
+  .btn-reset:hover { border-color: rgba(255,255,255,0.22); color: var(--white); }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center; margin-top: 24px;
+    font-size: 12px; color: rgba(255,255,255,0.18);
+    animation: fadeUp 0.5s 0.35s ease both;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px) {
+    .card { padding: 20px 16px; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .contact-grid .span2 { grid-column: 1; }
+    .result-card { padding: 28px 16px; }
+    .result-score { font-size: 52px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- LOGO -->
+  <div class="logo-bar">
+    <img src="data:image/png;base64,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oaACiBQAYQKCZEiGaogJkAlhiiWcBEDAIaIAIkqCIIoiEiYACkACAoQRSCiEIQAACACIgQBCAiqCooihIaAoEQATIAKQiBgJBiQQAiQASgICIiICIIgJBRAqIIJiKAJBqgJAakiIqIIKiYqSRIASAAJQJARiJhKoJQEQSEYgAAAAJjCmCEiAABBAJQAAIgolCkqpAAASAAAAAQFMIiKiIiAkqBiIqoioiKhIiIsRACAoUVCiIBBIICIiJCYIhAABAECBSQAEAEgAiAkBoIKkSoAQIIohFBCJAihAAkKIgASIRJAAiECJBKAAIUgIqAIoiIRAIgkCKgAJICIIoAQBBIJoBSCJoiCIkiAIIQiIJKCAAJSZFoRAJQkFJKiKVKAAARCqAQAIJAiiIoiRgIQSIqFgKmCCAoIIJCqKoIQQAIAQoAKqAQJgJAAAQBpokCoJSRAqABiiKAKhiAKiKSihCBCSRCkSIgASCAIAkCigICqEKkhQmBqiIiqAoIoBIAqgCgkIJJFJECCCIACiJCoJoSoaBiAoBAQCpkIASRKoIQiAAmIKikSSAIhCpBiIIgYKmAYKoASiJIEgIQAIgBoCqSiAQQmCaRYAAoJCKIJAiAiKIRBACiZAhJiAiITQJhqBBIpqCKJKQIaJCJoQkEIgSqIiRAoAIEEolAAISIBIASAECpCKhAICRiKQIgqIgmAmJIAoiQCCJBIiRBiQEiEKCJgCRCJCIKqQJCJiCCGoqCJIQQolAACIIoAsAAAI" alt="NSIA Holding Assurances">
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-pill">🚗 Quiz · Assurance Auto · Côte d'Ivoire</div>
+    <h1>Êtes-vous vraiment<br><em>en règle</em> sur la route ?</h1>
+    <p>Les contrôles routiers se renforcent. Une simple négligence peut coûter très cher. Vérifiez votre situation en 30 secondes.</p>
+    <div class="hero-meta">
+      <span>⏱ 30 secondes</span>
+      <span>✅ 12 questions</span>
+      <span>🎯 Résultat immédiat</span>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="progress-row">
+      <span id="progressText">0 / 12 cases cochées</span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <!-- FORM CARD -->
+  <div id="formCard">
+
+    <!-- SECTION 1 -->
+    <div class="card">
+      <div class="sec-head">
+        <div class="sec-num">1</div>
+        <div class="sec-title">
+          Mon assurance est-elle valide ?
+          <small>Vérifiez la validité de votre contrat</small>
+        </div>
+      </div>
+      <ul class="checklist">
+        <li><label class="chk-label" onclick="toggle(this)">
+          <input type="checkbox"><div class="chk-box">✓</div>
+          <div class="chk-text">Mon contrat est à jour <strong>(pas expiré)</strong></div>
+        </label></li>
+        <li><label class="chk-label" onclick="toggle(this)">
+          <input type="checkbox"><div class="chk-box">✓</div>
+          <div class="chk-text">J'ai mon attestation disponible <strong>(papier ou digital)</strong></div>
+        </label></li>
+        <li><label class="chk-label" onclick="toggle(this)">
+          <input type="checkbox"><div class="chk-box">✓</div>
+          <div class="chk-text">Mon véhicule correspond bien au contrat</div>
+        </label></li>
+      </ul>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="card">
+      <div class="sec-head">
+        <div class="sec-num">2</div>
+        <div class="sec-title">
+          Suis-je vraiment couvert en cas d'accident ?
+          <small>Connaissez-vous l'étendue réelle de votre couverture ?</small>
+        </div>
+      </div>
+      <ul class="checklist">
+        <li><label class="chk-label" onclick="toggle(this)">
+          <input type="checkbox"><div class="chk-box">✓</div>
+          <div class="chk-text">Je connais mon niveau de couverture <strong>(Responsabilité civile / Tous risques)</strong></div>
+        </label></li>
+        <li><label class="chk-label" onclick="toggle(this)">
+          <input type="checkbox"><div class="chk-box">✓</div>
+          <div class="chk-text">Je comprends ce que mon assurance prend réellement en charge</div>
+        </label></li>
+        <li><label class="chk-label" onclick="toggle(this)">
+          <input type="checkbox"><div class="chk-box">✓</div>
+          <div class="chk-text">Je sais ce qui reste à ma charge en cas de sinistre</div>
+        </label></li>
+      </ul>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div class="card">
+      <div class="sec-head">
+        <div class="sec-num">3</div>
+        <div class="sec-title">
+          Ai-je vérifié mes garanties ?
+          <small>Plafonds, exclusions et procédures</small>
+        </div>
+      </div>
+      <ul class="checklist">
+        <li><label class="chk-label" onclick="toggle(this)">
+          <input type="checkbox"><div class="chk-box">✓</div>
+          <div class="chk-text">Je connais les plafonds d'indemnisation de mon assurance</div>
+        </label></li>
+        <li><label class="chk-label" onclick="toggle(this)">
+          <input type="checkbox"><div class="chk-box">✓</div>
+          <div class="chk-text">J'ai identifié les exclusions importantes de mon contrat</div>
+        </label></li>
+        <li><label class="chk-label" onclick="toggle(this)">
+          <input type="checkbox"><div class="chk-box">✓</div>
+          <div class="chk-text">Je connais la procédure pour déclarer rapidement un sinistre</div>
+        </label></li>
+      </ul>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div class="card">
+      <div class="sec-head">
+        <div class="sec-num">4</div>
+        <div class="sec-title">
+          Suis-je en règle face aux contrôles ?
+          <small>Conformité légale et documents à portée de main</small>
+        </div>
+      </div>
+      <ul class="checklist">
+        <li><label class="chk-label" onclick="toggle(this)">
+          <input type="checkbox"><div class="chk-box">✓</div>
+          <div class="chk-text">Je peux présenter mon assurance immédiatement en cas de contrôle</div>
+        </label></li>
+        <li><label class="chk-label" onclick="toggle(this)">
+          <input type="checkbox"><div class="chk-box">✓</div>
+          <div class="chk-text">Mon véhicule est conforme aux obligations légales</div>
+        </label></li>
+        <li><label class="chk-label" onclick="toggle(this)">
+          <input type="checkbox"><div class="chk-box">✓</div>
+          <div class="chk-text">Je ne prends aucun risque de défaut d'assurance</div>
+        </label></li>
+      </ul>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="card">
+      <div class="sec-head">
+        <div class="sec-num" style="background:linear-gradient(135deg,rgba(210,159,19,0.3),rgba(210,159,19,0.15));color:var(--gold);">👤</div>
+        <div class="sec-title">
+          Vos coordonnées
+          <small>Pour recevoir votre résultat personnalisé</small>
+        </div>
+      </div>
+      <div class="contact-grid">
+        <div class="field-wrap">
+          <div class="field-lbl">Nom complet <sup>*</sup></div>
+          <input type="text" id="fieldNom" class="field-inp" placeholder="Ex : Kouadio Jean">
+          <div class="field-err" id="errNom">Veuillez entrer votre nom</div>
+        </div>
+        <div class="field-wrap">
+          <div class="field-lbl">Téléphone <sup>*</sup></div>
+          <input type="tel" id="fieldTel" class="field-inp" placeholder="Ex : 07 00 00 00 00">
+          <div class="field-err" id="errTel">Veuillez entrer votre numéro</div>
+        </div>
+        <div class="field-wrap span2">
+          <div class="field-lbl">Email <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;">(optionnel)</span></div>
+          <input type="email" id="fieldEmail" class="field-inp" placeholder="Ex : jean.kouadio@email.com">
+          <div class="field-err" id="errEmail">Format d'email invalide</div>
+        </div>
+      </div>
+      <div class="privacy">Vos informations sont utilisées uniquement pour vous recontacter dans le cadre de votre couverture assurance. Aucune donnée n'est partagée avec des tiers.</div>
+    </div>
+
+    <!-- SCORE + SUBMIT -->
+    <div class="card">
+      <div class="score-bar">
+        <div class="score-lbl">Mon score actuel</div>
+        <div class="score-val" id="scoreCount">0 / 12</div>
+      </div>
+      <button class="btn-main" id="btnSubmit" onclick="showResult()">
+        Voir mon profil conducteur →
+      </button>
+    </div>
+
+  </div><!-- /formCard -->
+
+  <!-- RESULT -->
+  <div class="result-card" id="resultCard">
+    <div class="result-greeting" id="resultGreeting"></div>
+    <div class="result-emoji" id="resultEmoji"></div>
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-profile-lbl" id="resultProfile"></div>
+    <div class="result-title" id="resultTitle"></div>
+    <div class="result-tags" id="resultTags"></div>
+    <div class="result-desc" id="resultDesc"></div>
+
+    <div class="cta-box">
+      <p>💡 <strong>Besoin de vérifier votre couverture ?</strong><br>Demandez un devis en quelques clics et sécurisez-vous maintenant.</p>
+      <a href="https://www.nsiaassurancesauto.ci/#devis" target="_blank" class="btn-cta">Demander un devis NSIA →</a>
+    </div>
+
+    <div class="linkedin-box">
+      <strong>💬 Partagez votre score sur LinkedIn !</strong><br>
+      Commentez avec votre résultat : ex. <em>« 9/12 – L'Assuré Serein »</em> et dites ce que vous allez améliorer.
+    </div>
+
+    <button class="btn-reset" onclick="resetQuiz()">↩ Recommencer le quiz</button>
+  </div>
+
+  <div class="footer">© NSIA Holding Assurances · Côte d'Ivoire · Quiz interactif assurance auto</div>
+
+</div>
+
+<script>
+  let score = 0;
+
+  function toggle(label) {
+    const cb = label.querySelector('input[type="checkbox"]');
+    cb.checked = !cb.checked;
+    label.classList.toggle('checked', cb.checked);
+    label.querySelector('.chk-box').textContent = cb.checked ? '✓' : '';
+    updateScore();
+  }
+
+  function updateScore() {
+    score = document.querySelectorAll('input[type="checkbox"]:checked').length;
+    const pct = Math.round((score / 12) * 100);
+    document.getElementById('scoreCount').textContent = score + ' / 12';
+    document.getElementById('progressText').textContent = score + ' / 12 cases cochées';
+    document.getElementById('progressPct').textContent = pct + '%';
+    document.getElementById('progressFill').style.width = pct + '%';
+  }
+
+  function getProfile(s) {
+    if (s >= 10) return {
+      emoji: '🏆', cls: 'green', profile: "L'Assuré Serein",
+      title: 'Vous maîtrisez votre situation !',
+      desc: "Vous maîtrisez votre assurance, vous êtes prêt face aux contrôles et vous limitez votre exposition financière. Continuez comme ça — vous faites partie des conducteurs les mieux préparés.",
+      tags: [{t:'✔ Assurance maîtrisée',c:'green'},{t:'✔ Prêt aux contrôles',c:'green'},{t:'✔ Exposition limitée',c:'green'}]
+    };
+    if (s >= 6) return {
+      emoji: '⚡', cls: 'orange', profile: "L'Assuré Vigilant",
+      title: 'Sur la bonne voie, mais attention !',
+      desc: "Vous êtes sur la bonne voie. Mais certaines négligences peuvent vous coûter cher. Vérifiez votre contrat maintenant ou faites un point avec votre assureur.",
+      tags: [{t:'⚠ Quelques lacunes',c:'orange'},{t:'⚠ Contrat à vérifier',c:'orange'},{t:'↗ À améliorer',c:'orange'}]
+    };
+    return {
+      emoji: '🚨', cls: 'red', profile: "Le Conducteur à Risque",
+      title: 'Vous êtes exposé. Agissez maintenant.',
+      desc: "Vous êtes potentiellement exposé à des amendes, verbalisations et dépenses importantes en cas d'accident. N'attendez pas — demandez un devis et mettez-vous en sécurité.",
+      tags: [{t:'✗ Risque financier élevé',c:'red'},{t:'✗ Couverture insuffisante',c:'red'},{t:'✗ Action urgente',c:'red'}]
+    };
+  }
+
+  async function showResult() {
+    const nom   = document.getElementById('fieldNom').value.trim();
+    const tel   = document.getElementById('fieldTel').value.trim();
+    const email = document.getElementById('fieldEmail').value.trim();
+    let valid = true;
+
+    const setErr = (id, errId, show) => {
+      document.getElementById(id).classList.toggle('error', show);
+      document.getElementById(errId).classList.toggle('show', show);
+      if (show) valid = false;
+    };
+
+    setErr('fieldNom', 'errNom', !nom);
+    setErr('fieldTel', 'errTel', !tel);
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setErr('fieldEmail', 'errEmail', true);
+    } else {
+      setErr('fieldEmail', 'errEmail', false);
+    }
+
+    if (!valid) {
+      document.getElementById('fieldNom').scrollIntoView({behavior:'smooth', block:'center'});
+      return;
+    }
+
+    const btn = document.getElementById('btnSubmit');
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours…';
+
+    const p = getProfile(score);
+    const date = new Date().toLocaleString('fr-FR', {dateStyle:'full', timeStyle:'short'});
+    const cochees    = [...document.querySelectorAll('.chk-label.checked .chk-text')].map(e => '✔ ' + e.textContent.trim()).join('\n') || '(aucune)';
+    const nonCochees = [...document.querySelectorAll('.chk-label:not(.checked) .chk-text')].map(e => '✗ ' + e.textContent.trim()).join('\n') || '(toutes cochées)';
+
+    try {
+      await fetch('/.netlify/functions/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nom, tel, email, score, profile: p.profile, emoji: p.emoji, cochees, nonCochees, date })
+      });
+    } catch (err) {
+      console.warn('Envoi email échoué:', err);
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Voir mon profil conducteur →';
+
+    document.getElementById('formCard').style.display = 'none';
+    const rc = document.getElementById('resultCard');
+    rc.classList.add('show');
+
+    document.getElementById('resultGreeting').textContent = 'Résultat pour ' + nom;
+    document.getElementById('resultEmoji').textContent = p.emoji;
+    document.getElementById('resultScore').className = 'result-score ' + p.cls;
+    document.getElementById('resultScore').textContent = score + '/12';
+    document.getElementById('resultProfile').textContent = p.profile;
+    document.getElementById('resultTitle').textContent = p.title;
+    document.getElementById('resultDesc').textContent = p.desc;
+    document.getElementById('resultTags').innerHTML = p.tags.map(t =>
+      `<span class="tag ${t.c}">${t.t}</span>`).join('');
+
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function resetQuiz() {
+    document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+    document.querySelectorAll('.chk-label').forEach(l => l.classList.remove('checked'));
+    document.querySelectorAll('.chk-box').forEach(b => b.textContent = '');
+    ['fieldNom','fieldTel','fieldEmail'].forEach(id => {
+      document.getElementById(id).value = '';
+      document.getElementById(id).classList.remove('error');
+    });
+    ['errNom','errTel','errEmail'].forEach(id => document.getElementById(id).classList.remove('show'));
+    score = 0; updateScore();
+    document.getElementById('resultCard').classList.remove('show');
+    document.getElementById('formCard').style.display = 'block';
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+</script>
+</body>
+</html>
