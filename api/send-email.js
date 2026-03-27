@@ -78,7 +78,7 @@ export default async function handler(req, res) {
 
     const mailOptions = {
       from: `"NSIA Holding Assurances" <${process.env.MAIL_USERNAME}>`,
-      to: process.env.MAIL_USERNAME,
+      to: process.env.MAIL_DEST,
       replyTo: email ? `"${nom}" <${email}>` : process.env.MAIL_REPLY_TO,
       subject: `🚗 Nouveau lead Quiz NSIA – ${nom} (${score}/12 – ${profile})`,
       html: htmlBody,
