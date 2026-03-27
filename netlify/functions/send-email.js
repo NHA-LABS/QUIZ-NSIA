@@ -14,15 +14,20 @@ exports.handler = async function (event) {
 
   const { nom, tel, email, score, profile, emoji, cochees, nonCochees, date } = data;
 
+  // ── Configuration SMTP via variables d'environnement Netlify ──
   const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT),
+    host: process.env.MAIL_HOST,
+    port: parseInt(process.env.MAIL_PORT),
     secure: false,
     auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
+      user: process.env.MAIL_USERNAME,
+      pass: process.env.MAIL_PASSWORD,
     },
-    tls: { ciphers: "SSLv3" },
+    tls: {
+      ciphers: "SSLv3",
+      rejectUnauthorized: false,
+    },
+    requireTLS: true,
   });
 
   const scoreColor =
@@ -68,20 +73,33 @@ exports.handler = async function (event) {
     </div>`;
 
   try {
-    await transporter.sendMail({
-      from: `"${process.env.SMTP_FROM_NAME}" <${process.env.SMTP_USER}>`,
-      to: process.env.SMTP_DEST,
-      replyTo: process.env.SMTP_REPLY_TO,
+    console.log("→ Tentative envoi SMTP");
+    console.log("→ MAIL_HOST:", process.env.MAIL_HOST);
+    console.log("→ MAIL_PORT:", process.env.MAIL_PORT);
+    console.log("→ MAIL_USERNAME:", process.env.MAIL_USERNAME);
+    console.log("→ MAIL_REPLY_TO:", process.env.MAIL_REPLY_TO);
+    console.log("→ Lead:", nom, "|", tel, "|", score + "/12", "|", profile);
+
+    const mailOptions = {
+      from: `"NSIA Holding Assurances" <${process.env.MAIL_USERNAME}>`,
+      to: process.env.MAIL_USERNAME,
+      replyTo: email ? `"${nom}" <${email}>` : process.env.MAIL_REPLY_TO,
       subject: `🚗 Nouveau lead Quiz NSIA – ${nom} (${score}/12 – ${profile})`,
       html: htmlBody,
-    });
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log("✅ Email envoyé – ID:", info.messageId);
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ success: true }),
+      body: JSON.stringify({ success: true, messageId: info.messageId }),
     };
+
   } catch (err) {
-    console.error("SMTP error:", err);
+    console.error("❌ SMTP error:", err.message);
+    console.error("❌ Code:", err.code);
+    console.error("❌ Response:", err.response);
     return {
       statusCode: 500,
       body: JSON.stringify({ success: false, error: err.message }),
